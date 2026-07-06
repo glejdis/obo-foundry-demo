@@ -12,13 +12,23 @@ from pathlib import Path
 
 import jwt
 from mcp.server.fastmcp import Context, FastMCP
+from mcp.server.transport_security import TransportSecuritySettings
 
 # Reuse the OBO helpers + app config from the repo root.
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 from auth import CLIENT_ID, TENANT  # noqa: E402
 from obo import get_my_profile, graph_get  # noqa: E402
 
-mcp = FastMCP("aldi-store-ops")
+# Behind the Container Apps ingress the Host header is the public FQDN, which
+# FastMCP's DNS-rebinding protection rejects by default. Allow the configured
+# host(s); ALLOWED_HOSTS="*" disables the check (fine for a public demo ingress).
+_allowed = os.environ.get("ALLOWED_HOSTS", "*").split(",")
+_security = TransportSecuritySettings(
+    enable_dns_rebinding_protection=(_allowed != ["*"]),
+    allowed_hosts=_allowed,
+    allowed_origins=_allowed,
+)
+mcp = FastMCP("aldi-store-ops", transport_security=_security)
 
 # Accepted audiences for the incoming user token (v1 uses api://<id>, v2 <id>).
 _VALID_AUDIENCES = [CLIENT_ID, f"api://{CLIENT_ID}"]
