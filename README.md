@@ -12,6 +12,24 @@ Foundry project: `aldi-workshop`. Entra app: `obo-demo`
 (`d03a0769-69cf-4601-afd6-2ba5f92aeadd`). Deployed MCP server:
 `https://aldi-store-ops-mcp.blackbeach-39f4dfc4.swedencentral.azurecontainerapps.io/mcp`
 
+## Architecture
+
+Two OBO variants, one per phase (source: [docs/obo-architecture.drawio](docs/obo-architecture.drawio)):
+
+### Flow A — Phase 1: function-calling agent
+
+The agent definition and model are hosted in Foundry; the function tools and the
+OBO exchange run in the client (MAF) app, which holds the user token **Tc**.
+
+![OBO Flow A — function-calling agent (OBO runs in the client app)](docs/obo-architecture-flow-a.png)
+
+### Flow B — Phase 2: custom MCP agent
+
+The agent, model, and OAuth passthrough all run in the Foundry project; the
+deployed MCP server performs the OBO exchange.
+
+![OBO Flow B — custom MCP agent (Foundry-managed passthrough)](docs/obo-architecture-flow-b.png)
+
 ## Setup
 
 1. `cp .env.example .env` and fill in `TENANT`, `CLIENT_ID`, `CLIENT_SECRET`,
