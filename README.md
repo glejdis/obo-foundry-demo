@@ -1,53 +1,88 @@
 # OBO Foundry Demo
 
-A minimal demonstration of the **On-Behalf-Of (OBO) / OAuth identity passthrough**
-flow with a Microsoft Foundry agent.
+Demonstrates the **On-Behalf-Of (OBO) / OAuth identity passthrough** flow with
+Microsoft Foundry agents built on the **Microsoft Agent Framework (MAF)**, in two
+phases:
 
-## Phase 1 — OBO with no MCP, no server (this repo)
+- **Phase 1** — OBO with no MCP, no server (the agent's own code does the exchange).
+- **Phase 2** — a custom **MCP server** on Azure Container Apps, with Foundry
+  managing the OBO exchange via **OAuth identity passthrough**.
 
-An agent answers *"who am I?"* by calling Microsoft Graph `/me` **as the signed-in
-user**, using a client-side function tool. Your own code performs the OBO token
-exchange — nothing to host.
-
-### Token flow
-
-| Step | Token | Where |
-|------|-------|-------|
-| 1–2  | **Tc** — user token | `auth.py` (device-code sign-in) |
-| 3–5  | **Tc + secret → TR** | `obo.py` (`acquire_token_on_behalf_of`) |
-| 6    | **TR → Graph** | `obo.py` (`GET /me`) |
-
-The agent (`agent.py`) orchestrates: it emits a `get_my_profile` function call,
-your handler runs the OBO exchange, and the result is returned to the model.
+Foundry project: `aldi-workshop`. Entra app: `obo-demo`
+(`d03a0769-69cf-4601-afd6-2ba5f92aeadd`). Deployed MCP server:
+`https://aldi-store-ops-mcp.blackbeach-39f4dfc4.swedencentral.azurecontainerapps.io/mcp`
 
 ## Setup
 
-1. **Entra app registration** (`obo-demo`):
-   - Authentication → Allow public client flows = **Yes**
-   - Expose an API → Application ID URI `api://<client-id>` → scope `access_as_user`
-     (Admins and users)
-   - Certificates & secrets → new client secret (copy the **Value**)
-   - API permissions → Microsoft Graph (Delegated): `User.Read`, `offline_access`,
-     `openid`, `profile`
-2. Copy `.env.example` → `.env` and fill in `TENANT`, `CLIENT_ID`, `CLIENT_SECRET`,
-   and your Foundry `PROJECT_ENDPOINT` / `MODEL_DEPLOYMENT_NAME`.
-3. Install deps:
-   ```
-   pip install -r requirements.txt
-   ```
+1. `cp .env.example .env` and fill in `TENANT`, `CLIENT_ID`, `CLIENT_SECRET`,
+   `PROJECT_ENDPOINT`, `MODEL_DEPLOYMENT_NAME`.
+2. `python -m pip install --only-binary=:all: -r requirements.txt`
+   (force wheels; the machine builds native deps from source otherwise).
+3. `az login` (the MAF agents use `DefaultAzureCredential` for the Foundry project).
 
-## Run
+## Files
+
+| File | Role |
+|------|------|
+| `auth.py` | Device-code sign-in → user token (**Tc**) |
+| `consent.py` | One-time Graph `User.Read` consent (no admin consent needed) |
+| `obo.py` | OBO exchange (**Tc + secret → TR**) + Graph helpers |
+| `agent.py` | **Phase 1** OBO agent (MAF) — "who am I?" |
+| `filial_agent.py` | Aldi store assistant (MAF) — mock tools, no identity |
+| `filial_agent_obo.py` | Store assistant (MAF) + OBO per-employee tools |
+| `mcp_server/` | **Phase 2** MCP server (OBO passthrough) + Dockerfile + deploy |
+| `register_foundry_mcp_agent.py` | Create the Foundry agent that uses the MCP tool |
+| `foundry_mcp_client.py` | Client with the Foundry consent loop |
+
+## Phase 1 — run the MAF agents
 
 ```
-python auth.py     # Step 1: prove you can get the user token (Tc)
-python obo.py      # Steps 1-6 without the agent: OBO + Graph /me
-python agent.py    # Full loop: Foundry agent + OBO function tool
+python agent.py                                          # OBO "who am I" (device sign-in)
+python filial_agent.py                                   # store assistant (no sign-in)
+python filial_agent_obo.py "Welche Schichten habe ich?"  # OBO per-employee
 ```
 
-Sign in via the printed device-code URL and accept the one-time consent.
+## Phase 2 — custom MCP server
 
-## Phase 2 — add a custom MCP server (next)
+### a) Deploy (done)
+```
+./mcp_server/deploy.ps1        # az containerapp up, public HTTPS, secret for CLIENT_SECRET
+```
 
-Move `get_my_profile` into a remote MCP server and let Foundry manage the OBO
-exchange via **OAuth identity passthrough** (custom OAuth). See the
-[MCP authentication docs](https://learn.microsoft.com/azure/ai-foundry/agents/how-to/mcp-authentication).
+### b) Register the MCP tool in Foundry (portal — your action)
+Foundry portal → **Add Tools → Custom → MCP → OAuth Identity Passthrough →
+Custom OAuth**, reusing the `obo-demo` app:
+
+| Field | Value |
+|-------|-------|
+| server_url | `https://aldi-store-ops-mcp.blackbeach-39f4dfc4.swedencentral.azurecontainerapps.io/mcp` |
+| Client ID | `d03a0769-69cf-4601-afd6-2ba5f92aeadd` |
+| Client secret | (from Certificates & secrets) |
+| Auth URL | `https://login.microsoftonline.com/f0e88043-72b8-4382-a4c0-b3be4d605aa5/oauth2/v2.0/authorize` |
+| Token URL | `https://login.microsoftonline.com/f0e88043-72b8-4382-a4c0-b3be4d605aa5/oauth2/v2.0/token` |
+| Refresh URL | (same as Token URL) |
+| Scopes | `api://d03a0769-69cf-4601-afd6-2ba5f92aeadd/access_as_user offline_access` |
+
+Note the **connection id/name** the portal creates.
+
+### c) Add the redirect URL (your action)
+Foundry returns a redirect URL after step (b). Add it to the `obo-demo` app →
+**Authentication → Redirect URIs (Web)**.
+
+### d) Create the agent + run the consent loop
+```
+# set MCP_SERVER_URL and MCP_CONNECTION_ID (from step b) in .env, then:
+python register_foundry_mcp_agent.py
+python foundry_mcp_client.py "Welche Schichten habe ich?"
+```
+On first use per user, Foundry returns an `oauth_consent_request`; the client
+prints the `consent_link`, waits for you to sign in, then resubmits with
+`previous_response_id`.
+
+## Notes
+- The MCP server validates each caller's token audience (`obo-demo`) before any
+  OBO exchange (`MCP_VERIFY_SIGNATURE=true`).
+- Custom OAuth is required (not managed) because it's your own server — Foundry
+  blocks Microsoft-audience tokens on custom endpoints.
+
+See the [MCP authentication docs](https://learn.microsoft.com/azure/ai-foundry/agents/how-to/mcp-authentication).
