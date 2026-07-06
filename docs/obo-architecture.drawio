@@ -1,0 +1,147 @@
+<mxfile host="Electron" version="26.0.0">
+  <diagram id="flow-a" name="A - Function-calling OBO">
+    <mxGraphModel dx="1422" dy="762" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="800" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="a_title" value="OBO Flow A &#8212; Function-calling agent" style="text;html=1;strokeColor=none;fillColor=none;align=center;fontSize=18;fontStyle=1;fontColor=#1f6feb;" vertex="1" parent="1">
+          <mxGeometry x="300" y="24" width="560" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="a_sub" value="Aldi-Filial-Assistent-obo &#183; the client code performs the OBO exchange in-process (MAF ChatAgent)" style="text;html=1;strokeColor=none;fillColor=none;align=center;fontSize=12;fontColor=#555555;" vertex="1" parent="1">
+          <mxGeometry x="230" y="56" width="700" height="24" as="geometry" />
+        </mxCell>
+        <mxCell id="a_client" value="Client &#8212; local app (auth.py)" style="swimlane;startSize=28;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="60" y="170" width="300" height="160" as="geometry" />
+        </mxCell>
+        <mxCell id="a_user" value="User&#10;(store employee)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#6c8ebf;" vertex="1" parent="a_client">
+          <mxGeometry x="80" y="55" width="140" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="a_entra" value="Microsoft Entra ID" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="470" y="180" width="340" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="a_agent" value="MAF Agent &#8212; Aldi-Filial-Assistent-obo" style="swimlane;startSize=28;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="430" y="440" width="400" height="150" as="geometry" />
+        </mxCell>
+        <mxCell id="a_model" value="ChatAgent&#10;(gpt-4.1-mini)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#9673a6;" vertex="1" parent="a_agent">
+          <mxGeometry x="30" y="55" width="160" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="a_obo" value="OBO handler&#10;(obo-demo client secret)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="a_agent">
+          <mxGeometry x="210" y="55" width="170" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="a_res" value="Resources" style="swimlane;startSize=28;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="930" y="400" width="200" height="190" as="geometry" />
+        </mxCell>
+        <mxCell id="a_graph" value="Microsoft Graph&#10;/me" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="a_res">
+          <mxGeometry x="25" y="45" width="150" height="55" as="geometry" />
+        </mxCell>
+        <mxCell id="a_roster" value="Store roster&#10;(keyed by UPN)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="a_res">
+          <mxGeometry x="25" y="115" width="150" height="55" as="geometry" />
+        </mxCell>
+        <mxCell id="a_e1" value="&#9312; sign in (device code)" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;strokeColor=#333333;fontSize=11;fontStyle=1;exitX=1;exitY=0.3;entryX=0;entryY=0.35;" edge="1" parent="1" source="a_client" target="a_entra">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="a_eTc" value="Tc (user token)" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;dashed=1;strokeColor=#999999;fontSize=11;exitX=0;exitY=0.7;entryX=1;entryY=0.7;" edge="1" parent="1" source="a_entra" target="a_client">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="a_e2" value="&#9313; message + Tc" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;strokeColor=#333333;fontSize=11;fontStyle=1;exitX=0.4;exitY=1;entryX=0;entryY=0.5;" edge="1" parent="1" source="a_client" target="a_agent">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="a_e3" value="&#9314; get app token T1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;strokeColor=#82b366;fontSize=11;fontStyle=1;exitX=0.2;exitY=0;entryX=0.3;entryY=1;" edge="1" parent="1" source="a_agent" target="a_entra">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="a_e4" value="&#9315; OBO: Tc + T1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;strokeColor=#d6b656;fontSize=11;fontStyle=1;exitX=0.5;exitY=0;entryX=0.55;entryY=1;" edge="1" parent="1" source="a_agent" target="a_entra">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="a_e5" value="&#9316; TR (Graph token)" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;strokeColor=#d79b00;fontSize=11;fontStyle=1;exitX=0.75;exitY=1;entryX=0.8;entryY=0;dashed=1;" edge="1" parent="1" source="a_entra" target="a_agent">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="a_e6" value="&#9317; call Graph as the user (TR)" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;strokeColor=#333333;fontSize=11;fontStyle=1;exitX=1;exitY=0.4;entryX=0;entryY=0.4;" edge="1" parent="1" source="a_agent" target="a_res">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="a_lc" value="Tc = user token (audience: obo-demo)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#999999;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="60" y="680" width="280" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="a_lt" value="T1 = app / agent identity token" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="360" y="680" width="250" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="a_lr" value="TR = resource token (Microsoft Graph)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="630" y="680" width="290" height="30" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+  <diagram id="flow-b" name="B - Custom MCP OBO">
+    <mxGraphModel dx="1422" dy="762" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="800" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="b_title" value="OBO Flow B &#8212; Custom MCP agent (Foundry-managed passthrough)" style="text;html=1;strokeColor=none;fillColor=none;align=center;fontSize=18;fontStyle=1;fontColor=#1f6feb;" vertex="1" parent="1">
+          <mxGeometry x="220" y="24" width="720" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="b_sub" value="Aldi-Filial-Assistent-mcp &#183; Foundry passes the user token; the deployed MCP server does the OBO exchange" style="text;html=1;strokeColor=none;fillColor=none;align=center;fontSize=12;fontColor=#555555;" vertex="1" parent="1">
+          <mxGeometry x="200" y="56" width="760" height="24" as="geometry" />
+        </mxCell>
+        <mxCell id="b_client" value="Client (foundry_mcp_client.py)" style="swimlane;startSize=28;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="60" y="170" width="300" height="160" as="geometry" />
+        </mxCell>
+        <mxCell id="b_user" value="User&#10;(store employee)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#6c8ebf;" vertex="1" parent="b_client">
+          <mxGeometry x="80" y="55" width="140" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="b_entra" value="Microsoft Entra ID" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="450" y="180" width="330" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="b_agent" value="Foundry Agent Service&#10;Aldi-Filial-Assistent-mcp" style="swimlane;startSize=40;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="420" y="430" width="370" height="160" as="geometry" />
+        </mxCell>
+        <mxCell id="b_model" value="model&#10;(gpt-4.1-mini)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#9673a6;" vertex="1" parent="b_agent">
+          <mxGeometry x="25" y="60" width="150" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="b_pass" value="OAuth passthrough&#10;(obo-demo Custom OAuth)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="b_agent">
+          <mxGeometry x="195" y="60" width="150" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="b_mcp" value="Aldi Store Ops MCP&#10;Azure Container Apps&#10;(holds obo-demo secret)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="880" y="290" width="230" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="b_res" value="Resources" style="swimlane;startSize=28;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="880" y="460" width="230" height="180" as="geometry" />
+        </mxCell>
+        <mxCell id="b_graph" value="Microsoft Graph /me" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="b_res">
+          <mxGeometry x="30" y="45" width="170" height="55" as="geometry" />
+        </mxCell>
+        <mxCell id="b_roster" value="Store roster (per UPN)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="b_res">
+          <mxGeometry x="30" y="115" width="170" height="45" as="geometry" />
+        </mxCell>
+        <mxCell id="b_e1" value="&#9312; sign in / consent" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;strokeColor=#333333;fontSize=11;fontStyle=1;exitX=1;exitY=0.3;entryX=0;entryY=0.35;" edge="1" parent="1" source="b_client" target="b_entra">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="b_eTc" value="Tc (user token)" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;dashed=1;strokeColor=#999999;fontSize=11;exitX=0;exitY=0.7;entryX=1;entryY=0.7;" edge="1" parent="1" source="b_entra" target="b_client">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="b_e2" value="&#9313; message" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;strokeColor=#333333;fontSize=11;fontStyle=1;exitX=0.4;exitY=1;entryX=0;entryY=0.5;" edge="1" parent="1" source="b_client" target="b_agent">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="b_e3" value="&#9314; passthrough obtains Tc" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;strokeColor=#82b366;fontSize=11;fontStyle=1;exitX=0.5;exitY=0;entryX=0.5;entryY=1;" edge="1" parent="1" source="b_agent" target="b_entra">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="b_e4" value="&#9315; MCP call + Tc" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;strokeColor=#333333;fontSize=11;fontStyle=1;exitX=1;exitY=0.3;entryX=0;entryY=1;" edge="1" parent="1" source="b_agent" target="b_mcp">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="b_e5" value="&#9316; OBO: Tc + secret &#8594; TR" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;strokeColor=#d79b00;fontSize=11;fontStyle=1;exitX=0.4;exitY=0;entryX=0.85;entryY=1;" edge="1" parent="1" source="b_mcp" target="b_entra">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="b_e6" value="&#9317; call Graph as the user (TR)" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;strokeColor=#333333;fontSize=11;fontStyle=1;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="b_mcp" target="b_res">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="b_lc" value="Tc = user token (audience: obo-demo)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#999999;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="60" y="690" width="280" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="b_lt" value="Foundry brokers sign-in / consent" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="360" y="690" width="250" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="b_lr" value="TR = resource token (Microsoft Graph)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="630" y="690" width="290" height="30" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
