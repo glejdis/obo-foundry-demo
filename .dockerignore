@@ -1,0 +1,15 @@
+# Exclude local/dev files from the Docker build context.
+.venv/
+venv/
+.git/
+__pycache__/
+*.pyc
+.env
+*.env
+!.env.example
+mcp_server/local_client.py
+foundry_mcp_client.py
+agent.py
+filial_agent.py
+filial_agent_obo.py
+consent.py

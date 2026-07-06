@@ -1,0 +1,7 @@
+# Server-only dependencies (no agent-framework / azure-ai-projects needed here).
+mcp
+msal
+requests
+pyjwt
+cryptography
+python-dotenv

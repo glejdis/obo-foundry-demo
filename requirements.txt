@@ -4,3 +4,5 @@ msal
 requests
 python-dotenv
 mcp
+agent-framework-core==1.0.0rc6
+agent-framework-azure-ai==1.0.0rc6
