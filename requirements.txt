@@ -3,3 +3,4 @@ azure-identity
 msal
 requests
 python-dotenv
+mcp
