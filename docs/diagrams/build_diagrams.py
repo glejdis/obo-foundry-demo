@@ -157,21 +157,24 @@ def flow_a(ax):
     arrow(ax, (500, 722), (395, 722), color=C_DASH, dashed=True, rad=-0.0)
     chip(ax, 448, 748, "tool-call request", tc=C_DASH)
 
-    # OBO exchange (client <-> Entra), across the open top-middle
-    arrow(ax, (360, 458), (958, 226), color=C_T1, rad=0.10)
-    chip(ax, 690, 322, "get app token T1", tc=C_T1)
-    badge(ax, 560, 388, 3)
-    arrow(ax, (360, 485), (988, 230), color=C_OBO, rad=0.16)
-    chip(ax, 748, 378, "OBO: Tc + T1", tc=C_OBO)
-    badge(ax, 602, 430, 4)
-    arrow(ax, (1018, 230), (362, 502), color=C_OBO, dashed=True, rad=0.22)
-    chip(ax, 812, 452, "TR (Graph token)", tc=C_OBO)
-    badge(ax, 668, 468, 5)
+    # OBO token exchange (client <-> Entra) — a clean nested fan across the
+    # open middle: 3) request app token T1, 4) send OBO exchange, 5) receive TR.
+    arrow(ax, (357, 452), (980, 226), color=C_T1, rad=0.14)
+    chip(ax, 730, 344, "get app token T1", tc=C_T1)
+    badge(ax, 600, 400, 3)
 
-    # call Graph as the user
-    arrow(ax, (395, 470), (1180, 460))
-    chip(ax, 792, 432, "call Graph as the user (TR)")
-    badge(ax, 505, 452, 6)
+    arrow(ax, (357, 476), (1015, 226), color=C_OBO, rad=0.22)
+    chip(ax, 812, 452, "OBO: Tc + T1", tc=C_OBO)
+    badge(ax, 700, 486, 4)
+
+    arrow(ax, (1050, 226), (357, 500), color=C_OBO, dashed=True, rad=0.30)
+    chip(ax, 905, 300, "TR (Graph token)", tc=C_OBO)
+    badge(ax, 560, 334, 5)
+
+    # 6) call Graph as the user — straight, kept clear below the token fan.
+    arrow(ax, (357, 520), (1180, 486))
+    chip(ax, 792, 512, "call Graph as the user (TR)")
+    badge(ax, 560, 512, 6)
 
     legend(ax)
 
