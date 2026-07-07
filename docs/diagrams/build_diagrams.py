@@ -15,6 +15,7 @@ import matplotlib
 matplotlib.use("Agg")
 from matplotlib import patches  # noqa: E402
 from matplotlib import pyplot as plt  # noqa: E402
+from matplotlib.path import Path as MplPath  # noqa: E402
 
 W, H = 1500, 900  # screen-style canvas (y grows downward)
 
@@ -96,6 +97,46 @@ def arrow(ax, p1, p2, color=C_MAIN, dashed=False, rad=0.0, lw=2.0):
     )
 
 
+def _seg_unit(a, b):
+    dx, dy = b[0] - a[0], b[1] - a[1]
+    d = (dx * dx + dy * dy) ** 0.5 or 1.0
+    return dx / d, dy / d
+
+
+def oarrow(ax, pts, color=C_MAIN, dashed=False, lw=2.0, r=16):
+    """Orthogonal ("elbow") arrow through screen-space waypoints.
+
+    Routes only along horizontal/vertical segments with softly rounded
+    corners, so several arrows can share the open middle in separate lanes
+    without overlapping.
+    """
+    p = [(x, _y(y)) for x, y in pts]
+    verts, codes = [p[0]], [MplPath.MOVETO]
+    for i in range(1, len(p) - 1):
+        prev, cur, nxt = p[i - 1], p[i], p[i + 1]
+        ux1, uy1 = _seg_unit(cur, prev)
+        ux2, uy2 = _seg_unit(cur, nxt)
+        len_in = ((cur[0] - prev[0]) ** 2 + (cur[1] - prev[1]) ** 2) ** 0.5
+        len_out = ((nxt[0] - cur[0]) ** 2 + (nxt[1] - cur[1]) ** 2) ** 0.5
+        rr = min(r, 0.45 * len_in, 0.45 * len_out)
+        verts.append((cur[0] + ux1 * rr, cur[1] + uy1 * rr))
+        codes.append(MplPath.LINETO)
+        verts.append(cur)
+        codes.append(MplPath.CURVE3)
+        verts.append((cur[0] + ux2 * rr, cur[1] + uy2 * rr))
+        codes.append(MplPath.CURVE3)
+    verts.append(p[-1])
+    codes.append(MplPath.LINETO)
+    ax.add_patch(
+        patches.FancyArrowPatch(
+            path=MplPath(verts, codes),
+            arrowstyle="-|>", mutation_scale=16, lw=lw, color=color,
+            linestyle="--" if dashed else "-", zorder=5,
+            shrinkA=0, shrinkB=0, joinstyle="round", capstyle="round",
+        )
+    )
+
+
 def base(ax, title, subtitle):
     ax.text(W / 2, _y(38), title, ha="center", va="center", fontsize=21,
             fontweight="bold", color=TITLE_C)
@@ -157,24 +198,25 @@ def flow_a(ax):
     arrow(ax, (500, 722), (395, 722), color=C_DASH, dashed=True, rad=-0.0)
     chip(ax, 448, 748, "tool-call request", tc=C_DASH)
 
-    # OBO token exchange (client <-> Entra) — a clean nested fan across the
-    # open middle: 3) request app token T1, 4) send OBO exchange, 5) receive TR.
-    arrow(ax, (357, 452), (980, 226), color=C_T1, rad=0.14)
-    chip(ax, 730, 344, "get app token T1", tc=C_T1)
-    badge(ax, 600, 400, 3)
+    # OBO token exchange — orthogonal "elbow" routing so the arrows run in
+    # separate lanes and never overlap: 3) request app token T1, 4) send the
+    # OBO exchange, 5) receive TR back (dashed return).
+    oarrow(ax, [(357, 452), (1000, 452), (1000, 228)], color=C_T1)
+    chip(ax, 1000, 350, "get app token T1", tc=C_T1)
+    badge(ax, 560, 452, 3)
 
-    arrow(ax, (357, 476), (1015, 226), color=C_OBO, rad=0.22)
-    chip(ax, 812, 452, "OBO: Tc + T1", tc=C_OBO)
-    badge(ax, 700, 486, 4)
+    oarrow(ax, [(357, 470), (1075, 470), (1075, 228)], color=C_OBO)
+    chip(ax, 1075, 405, "OBO: Tc + T1", tc=C_OBO)
+    badge(ax, 665, 470, 4)
 
-    arrow(ax, (1050, 226), (357, 500), color=C_OBO, dashed=True, rad=0.30)
-    chip(ax, 905, 300, "TR (Graph token)", tc=C_OBO)
-    badge(ax, 560, 334, 5)
+    oarrow(ax, [(1150, 228), (1150, 515), (357, 515)], color=C_OBO, dashed=True)
+    chip(ax, 1150, 300, "TR (Graph token)", tc=C_OBO)
+    badge(ax, 800, 515, 5)
 
-    # 6) call Graph as the user — straight, kept clear below the token fan.
-    arrow(ax, (357, 520), (1180, 486))
-    chip(ax, 792, 512, "call Graph as the user (TR)")
-    badge(ax, 560, 512, 6)
+    # 6) call Graph as the user — straight lane into Microsoft Graph /me.
+    oarrow(ax, [(357, 490), (1180, 490)])
+    chip(ax, 720, 490, "call Graph as the user (TR)")
+    badge(ax, 470, 490, 6)
 
     legend(ax)
 
