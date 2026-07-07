@@ -8,6 +8,23 @@ phases:
 - **Phase 2** — a custom **MCP server** on Azure Container Apps, with Foundry
   managing the OBO exchange via **OAuth identity passthrough**.
 
+### Three MAF agents (where does OBO happen?)
+
+All three are built with the Microsoft Agent Framework — MAF always runs the
+tool-calling loop. They differ in whether they use a custom MCP server and where
+the on-behalf-of exchange runs:
+
+| Agent (file) | Custom MCP? | OBO / identity | Where the OBO exchange runs |
+|------|:---:|------|------|
+| `agent.py` / `filial_agent_obo.py` | ❌ | ✅ per-user | **in the MAF client** (in-process tool) |
+| `filial_agent_mcp.py` | ✅ | ✅ per-user | **in the MCP server** (client passes the token) |
+| `filial_agent.py` | ❌ | ❌ none | n/a — mock tools, no identity |
+
+`filial_agent_mcp.py` and the Foundry path (`register_foundry_mcp_agent.py`) both
+use the *same* MCP server; the difference is who injects the user token —
+`filial_agent_mcp.py` (MAF, an `Authorization` header) vs. Foundry's managed
+OAuth identity passthrough.
+
 Foundry project: `aldi-workshop`. Entra app: `obo-demo`
 (`d03a0769-69cf-4601-afd6-2ba5f92aeadd`). Deployed MCP server:
 `https://aldi-store-ops-mcp.blackbeach-39f4dfc4.swedencentral.azurecontainerapps.io/mcp`
@@ -45,9 +62,10 @@ deployed MCP server performs the OBO exchange.
 | `auth.py` | Device-code sign-in → user token (**Tc**) |
 | `consent.py` | One-time Graph `User.Read` consent (no admin consent needed) |
 | `obo.py` | OBO exchange (**Tc + secret → TR**) + Graph helpers |
-| `agent.py` | **Phase 1** OBO agent (MAF) — "who am I?" |
-| `filial_agent.py` | Aldi store assistant (MAF) — mock tools, no identity |
-| `filial_agent_obo.py` | Store assistant (MAF) + OBO per-employee tools |
+| `agent.py` | **Phase 1** OBO agent (MAF) — "who am I?" (in-process exchange) |
+| `filial_agent.py` | Aldi store assistant (MAF) — mock tools, **no MCP**, no identity |
+| `filial_agent_obo.py` | Store assistant (MAF) + OBO per-employee tools (in-process) |
+| `filial_agent_mcp.py` | Store assistant (MAF) that gets its tools from the **custom MCP** server |
 | `mcp_server/` | **Phase 2** MCP server (OBO passthrough) + Dockerfile + deploy |
 | `register_foundry_mcp_agent.py` | Create the Foundry agent that uses the MCP tool |
 | `foundry_mcp_client.py` | Client with the Foundry consent loop |
@@ -96,6 +114,24 @@ python foundry_mcp_client.py "Welche Schichten habe ich?"
 On first use per user, Foundry returns an `oauth_consent_request`; the client
 prints the `consent_link`, waits for you to sign in, then resubmits with
 `previous_response_id`.
+
+### e) Alternative: talk to the MCP server from a MAF agent (no Foundry registration)
+
+`filial_agent_mcp.py` is a MAF agent that connects to the **same** MCP server via
+`MCPStreamableHTTPTool`. Instead of Foundry's managed passthrough, the client
+signs the user in and attaches the token as an `Authorization` header; the MCP
+server runs the OBO exchange. Point it at the local or the deployed server:
+
+```
+# Local: start the server in another terminal, then run the agent.
+python mcp_server/server.py
+python filial_agent_mcp.py "Welche Schichten habe ich?"
+
+# Deployed: set MCP_SERVER_URL to the Container Apps /mcp URL, then run the agent.
+python filial_agent_mcp.py "Welche Schichten habe ich?"
+```
+
+`MCP_SERVER_URL` defaults to `http://127.0.0.1:8000/mcp`.
 
 ## Notes
 - The MCP server validates each caller's token audience (`obo-demo`) before any

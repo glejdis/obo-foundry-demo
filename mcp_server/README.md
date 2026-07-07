@@ -30,6 +30,15 @@ python mcp_server/local_client.py
 The client injects `Authorization: Bearer <user-token>` — the same mechanism
 Foundry uses when OAuth identity passthrough is configured.
 
+Terminal 2 (alternative) — a **Microsoft Agent Framework** agent that consumes
+this server via `MCPStreamableHTTPTool` (from the repo root):
+```
+python filial_agent_mcp.py "Welche Schichten habe ich?"
+```
+It signs the user in and attaches the token as an `Authorization` header, so the
+server runs the OBO exchange as that employee. Set `MCP_SERVER_URL` to target the
+deployed server instead of the local default (`http://127.0.0.1:8000/mcp`).
+
 ## Deploy to Azure Container Apps
 
 From the repo root:
