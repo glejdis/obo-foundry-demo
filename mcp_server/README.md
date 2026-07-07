@@ -1,4 +1,4 @@
-# Aldi Store Ops — MCP Server (Phase 2)
+# Aldi Store Ops — MCP Server (Flow B)
 
 A remote **MCP server** (streamable-HTTP) exposing the Aldi Filial-Assistent
 tools. The personalized tools use the **OBO / OAuth identity passthrough** flow:
@@ -57,12 +57,14 @@ Defaults: resource group `rg-Foundry`, region `swedencentral`, app
 The public endpoint validates that each caller's token audience matches the
 `obo-demo` app (`MCP_VERIFY_SIGNATURE=true`) before running any OBO exchange.
 
-## Next: register in Foundry
+## Use it from the MAF agent
 
-1. In Foundry, add an MCP tool pointing at the public URL, with **Custom OAuth**
-   identity passthrough reusing the `obo-demo` Entra app.
-2. Add Foundry's redirect URL to the app registration.
-3. Use `foundry_mcp_client.py` to surface the one-time
-   `oauth_consent_request.consent_link` and resubmit with `previous_response_id`.
+Once deployed, point `filial_agent_mcp.py` at the public URL and run it:
+```
+$env:MCP_SERVER_URL = "https://<app>.<region>.azurecontainerapps.io/mcp"
+python filial_agent_mcp.py "Welche Schichten habe ich?"
+```
+The agent signs the user in and passes the token as an `Authorization` header, so
+the server runs the OBO exchange as that employee.
 
 See the [MCP authentication docs](https://learn.microsoft.com/azure/ai-foundry/agents/how-to/mcp-authentication).

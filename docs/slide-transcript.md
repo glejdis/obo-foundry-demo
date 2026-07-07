@@ -76,12 +76,9 @@ Everything before the last step exists to make that final call happen with the
 
 ## Tying it to the demo
 
-- **Flow A (function-calling agent):** our **client app** does the sign-in, then
-  runs the badge-trade itself.
-- **Flow B (MCP server):** **Foundry** handles the sign-in and consent, and the
-  **deployed MCP server** runs the badge-trade. The user is prompted to consent
-  once, then it just works.
-- **Flow B, MAF variant (`filial_agent_mcp.py`):** same MCP server, but a
-  **Microsoft Agent Framework** client does the sign-in (like Flow A) and passes
-  the user badge to the server, which runs the badge-trade (like Flow B). Handy
-  when you want the MCP server's OBO without hosting the agent in Foundry.
+- **Flow A (`filial_agent_obo.py`):** our **client app** does the sign-in, then
+  runs the badge-trade itself, in-process.
+- **Flow B (`filial_agent_mcp.py`):** a **Microsoft Agent Framework** client does
+  the sign-in (like Flow A) and passes the user badge to the **deployed MCP
+  server**, which runs the badge-trade. Same downstream data, but the exchange
+  happens in the server instead of the client.

@@ -94,13 +94,13 @@
             <root>
                 <mxCell id="0"/>
                 <mxCell id="1" parent="0"/>
-                <mxCell id="b_title" value="OBO Flow B — Custom MCP agent (agent hosted in Foundry, Foundry-managed passthrough)" style="text;html=1;strokeColor=none;fillColor=none;align=center;fontSize=18;fontStyle=1;fontColor=#1f6feb;" vertex="1" parent="1">
+                <mxCell id="b_title" value="OBO Flow B — Custom MCP agent (MAF client signs in; the deployed MCP server performs the OBO exchange)" style="text;html=1;strokeColor=none;fillColor=none;align=center;fontSize=18;fontStyle=1;fontColor=#1f6feb;" vertex="1" parent="1">
                     <mxGeometry x="120" y="20" width="960" height="30" as="geometry"/>
                 </mxCell>
-                <mxCell id="b_sub" value="Aldi-Filial-Assistent-mcp · agent, model, and OAuth passthrough all run in the Foundry project; the deployed MCP server performs the OBO exchange" style="text;html=1;strokeColor=none;fillColor=none;align=center;fontSize=12;fontColor=#555555;" vertex="1" parent="1">
+                <mxCell id="b_sub" value="filial_agent_mcp.py · a MAF agent calls the deployed MCP server via MCPStreamableHTTPTool; the server holds the obo-demo secret and runs the OBO exchange as the employee" style="text;html=1;strokeColor=none;fillColor=none;align=center;fontSize=12;fontColor=#555555;" vertex="1" parent="1">
                     <mxGeometry x="120" y="52" width="960" height="24" as="geometry"/>
                 </mxCell>
-                <mxCell id="b_user" value="User&#xa;(store employee)&#xa;foundry_mcp_client.py" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontStyle=1;" vertex="1" parent="1">
+                <mxCell id="b_user" value="User&#xa;(store employee)&#xa;filial_agent_mcp.py" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontStyle=1;" vertex="1" parent="1">
                     <mxGeometry x="60" y="150" width="170" height="80" as="geometry"/>
                 </mxCell>
                 <mxCell id="b_entra" value="Microsoft Entra ID" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontStyle=1;" vertex="1" parent="1">

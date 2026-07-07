@@ -1,10 +1,9 @@
 # filial_agent_mcp.py — Aldi Filial-Assistent that gets its tools from the custom
 # Aldi Store Ops MCP server, built with Microsoft Agent Framework (MAF).
 #
-# This is the third variant of the OBO story, all built with MAF:
-#   agent.py              -> OBO flow, exchange runs IN-PROCESS (no MCP)
-#   filial_agent.py       -> plain tools, no identity        (no MCP)
-#   filial_agent_mcp.py   -> tools come from a CUSTOM MCP server (this file)
+# This is Flow B of the two-agent OBO demo, both built with MAF:
+#   filial_agent_obo.py   -> Flow A: OBO exchange runs IN-PROCESS (no MCP)
+#   filial_agent_mcp.py   -> Flow B: tools come from a CUSTOM MCP server (this file)
 #
 # Here MAF runs the tool-calling loop, but the tools live on the remote MCP
 # server. We sign the user in once (device code -> Tc) and attach the token to
@@ -65,7 +64,7 @@ async def main() -> None:
             )
             try:
                 agent = client.as_agent(
-                    name="Aldi-Filial-Assistent-mcp-maf",
+                    name="Aldi-Filial-Assistent-mcp",
                     instructions=INSTRUCTIONS,
                     tools=[mcp_tool],
                 )

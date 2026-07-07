@@ -8,8 +8,6 @@ __pycache__/
 *.env
 !.env.example
 mcp_server/local_client.py
-foundry_mcp_client.py
-agent.py
-filial_agent.py
 filial_agent_obo.py
+filial_agent_mcp.py
 consent.py
