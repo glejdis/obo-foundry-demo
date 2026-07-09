@@ -45,6 +45,11 @@ STORE_ROSTER = {
         "Mi 12:00–20:00 (Warenannahme)",
         "Sa 07:00–13:00 (Kasse)",
     ],
+    "admin@m365cpi49218200.onmicrosoft.com": [
+        "Di 09:00–17:00 (Kasse)",
+        "Do 10:00–18:00 (Kasse)",
+        "Fr 08:00–14:00 (Pfandannahme)",
+    ],
 }
 
 # ---- Personas & permission mapping -----------------------------------------
@@ -52,6 +57,7 @@ STORE_ROSTER = {
 # DEFAULT_PERSONA. The persona is resolved once at sign-in (via Graph /me).
 USER_PERSONAS = {
     "amberr@m365cpi49218200.onmicrosoft.com": "filialleiter",
+    "admin@m365cpi49218200.onmicrosoft.com": "kassierer",
 }
 DEFAULT_PERSONA = "kassierer"
 
