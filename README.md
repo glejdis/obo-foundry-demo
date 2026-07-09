@@ -95,6 +95,11 @@ python filial_agent_mcp.py "Welche Schichten habe ich?"
 `MCP_SERVER_URL` defaults to `http://127.0.0.1:8000/mcp`.
 
 ## Notes
+- Flow A (`filial_agent_obo.py`) maps each employee (UPN) to a **persona/role**
+  (`USER_PERSONAS`) whose **permissions** (`PERSONA_PERMISSIONS`) gate every tool:
+  a tool only runs if the signed-in persona holds its required permission — e.g.
+  only a `filialleiter` may call `get_team_shifts`. Unknown users fall back to
+  `kassierer`. The persona is resolved once at sign-in via Graph `/me`.
 - The MCP server validates each caller's token audience (`obo-demo`) before any
   OBO exchange (`MCP_VERIFY_SIGNATURE=true`).
 - Both flows reuse the same `obo-demo` Entra app and the OBO helpers in `obo.py`;
